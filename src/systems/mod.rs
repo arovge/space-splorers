@@ -1,3 +1,2 @@
-mod ship;
-
-pub use ship::handle_keyboard_input;
+pub mod ship;
+pub mod text;
