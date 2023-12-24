@@ -1,5 +1,5 @@
 use crate::components::{
-    CoordinatesText, Health, HealthText, LaserCooldown, LaserCooldownText, Ship,
+    CoordinatesText, Health, HealthText, LaserCooldown, LaserCooldownText, Player,
 };
 use bevy::prelude::*;
 
@@ -65,7 +65,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
 fn update_coordinates_text(
     mut text_query: Query<&mut Text, With<CoordinatesText>>,
-    ship_query: Query<&Transform, With<Ship>>,
+    ship_query: Query<&Transform, With<Player>>,
 ) {
     let ship_translation = ship_query.single().translation;
     let mut text = text_query.single_mut();
@@ -74,7 +74,7 @@ fn update_coordinates_text(
 
 fn update_health_text(
     mut text_query: Query<&mut Text, With<HealthText>>,
-    ship_query: Query<&Health, With<Ship>>,
+    ship_query: Query<&Health, With<Player>>,
 ) {
     let ship_health = ship_query.single().0;
     let mut text = text_query.single_mut();
@@ -83,8 +83,8 @@ fn update_health_text(
 
 fn update_cooldown_text(
     mut text_query: Query<&mut Text, With<LaserCooldownText>>,
-    ship_query: Query<Entity, With<Ship>>,
-    cooldowns: Query<&LaserCooldown, With<Ship>>,
+    ship_query: Query<Entity, With<Player>>,
+    cooldowns: Query<&LaserCooldown, With<Player>>,
 ) {
     let mut text = text_query.single_mut();
     let ship = ship_query.single();

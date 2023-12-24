@@ -4,6 +4,14 @@ use bevy::prelude::*;
 pub struct Ship;
 
 #[derive(Component)]
+pub struct Player;
+
+#[derive(Component)]
+pub struct Laser {
+    pub direction: Vec3,
+}
+
+#[derive(Component)]
 pub struct LaserCooldown(pub Timer);
 
 #[derive(Component)]
@@ -29,8 +37,3 @@ pub struct HealthText;
 
 #[derive(Component)]
 pub struct LaserCooldownText;
-
-#[derive(Component)]
-pub struct Laser {
-    pub direction: Vec3,
-}

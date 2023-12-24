@@ -1,14 +1,14 @@
-use crate::{components::Laser, systems::laser::LASER_SIZE};
+use crate::{components::{Ship, Health}, systems::ship::SHIP_SIZE};
 use bevy::{ecs::system::Command, prelude::*, sprite::MaterialMesh2dBundle};
 
-pub struct SpawnLaserCommand {
+pub struct SpawnEnemyCommand {
     pub position: Vec3,
 }
 
-impl Command for SpawnLaserCommand {
+impl Command for SpawnEnemyCommand {
     fn apply(self, world: &mut World) {
         let mesh_handle = world.resource_scope(|_world, mut meshes: Mut<Assets<Mesh>>| {
-            let shape = shape::Cube { size: LASER_SIZE };
+            let shape = shape::Cube { size: SHIP_SIZE };
             meshes.add(Mesh::from(shape))
         });
 
@@ -25,9 +25,8 @@ impl Command for SpawnLaserCommand {
                 transform: Transform::from_translation(self.position),
                 ..default()
             },
-            Laser {
-                direction: Vec3::ZERO,
-            },
+            Ship,
+            Health(100)
         ));
     }
 }
