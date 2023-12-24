@@ -1,15 +1,18 @@
 use super::laser::{LASER_COOLDOWN_DURATION, LASER_SIZE};
 use crate::{
     commands::{
-        enemy::SpawnEnemyCommand, explosion::SpawnExplosionCommand, laser::SpawnLaserCommand,
+        explosion::SpawnExplosionCommand,
+        laser::SpawnLaserCommand,
+        ship::{ShipKind, SpawnShipCommand},
     },
     components::{Health, Laser, LaserCooldown, Player, Ship},
 };
-use bevy::{prelude::*, sprite::MaterialMesh2dBundle, window::PrimaryWindow};
+use bevy::{prelude::*, window::PrimaryWindow};
 use std::ops::Add;
 
 const SHIP_SPEED: f32 = 150.;
 pub const SHIP_SIZE: f32 = 20.;
+pub const SHIP_INITIAL_HEALTH: usize = 100;
 
 pub struct ShipPlugin;
 
@@ -28,24 +31,11 @@ impl Plugin for ShipPlugin {
     }
 }
 
-fn setup(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
-) {
-    commands.spawn((
-        MaterialMesh2dBundle {
-            mesh: meshes
-                .add(shape::Box::new(SHIP_SIZE, SHIP_SIZE, SHIP_SIZE).into())
-                .into(),
-            material: materials.add(ColorMaterial::from(Color::WHITE)),
-            transform: Transform::from_translation(Vec3::new(0., 0., 0.)),
-            ..default()
-        },
-        Ship,
-        Health::default(),
-        Player,
-    ));
+fn setup(mut commands: Commands) {
+    commands.add(SpawnShipCommand {
+        kind: ShipKind::Player,
+        position: Vec3::ZERO,
+    });
 }
 
 fn rotate_ship_to_cursor(
@@ -160,14 +150,17 @@ fn check_health_to_despawn(
     for (ship_transform, ship_entity, health) in &ship_query {
         if health.0 <= 0 {
             commands.entity(ship_entity).despawn();
-            commands.add(SpawnExplosionCommand(ship_transform.translation));
+            commands.add(SpawnExplosionCommand {
+                position: ship_transform.translation,
+            });
         }
     }
 }
 
 fn check_for_enemy_spawn(keys: Res<Input<KeyCode>>, mut commands: Commands) {
     if keys.just_pressed(KeyCode::F) {
-        commands.add(SpawnEnemyCommand {
+        commands.add(SpawnShipCommand {
+            kind: ShipKind::Enemy,
             position: Vec3::ZERO,
         });
     }

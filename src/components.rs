@@ -7,6 +7,9 @@ pub struct Ship;
 pub struct Player;
 
 #[derive(Component)]
+pub struct Enemy;
+
+#[derive(Component)]
 pub struct Laser {
     pub direction: Vec3,
 }
@@ -15,13 +18,7 @@ pub struct Laser {
 pub struct LaserCooldown(pub Timer);
 
 #[derive(Component)]
-pub struct Health(pub i32);
-
-impl Default for Health {
-    fn default() -> Self {
-        Self(100)
-    }
-}
+pub struct Health(pub usize);
 
 impl Health {
     pub fn take_damange(&mut self) {

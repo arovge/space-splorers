@@ -19,13 +19,14 @@ fn move_lasers(time: Res<Time>, mut query: Query<(&mut Transform, &Laser), With<
         let distance = LASER_SPEED * delta;
 
         // TODO: Figure out math
-        let theta = laser.direction.y.atan2(laser.direction.x);
+        let _theta = laser.direction.y.atan2(laser.direction.x);
         let dx = laser.direction.x * distance;
         let dy = laser.direction.y * distance;
         laser_transform.translation.x += dx;
         laser_transform.translation.y += dy;
 
         // TODO: How despawn when off screen?
+        // Maybe have it lose energy as it travels? Or a set distance/time to live?
     }
 }
 
