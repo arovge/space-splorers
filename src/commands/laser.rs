@@ -2,6 +2,7 @@ use crate::{components::Laser, systems::laser::LASER_SIZE};
 use bevy::{ecs::system::Command, prelude::*, sprite::MaterialMesh2dBundle};
 
 pub struct SpawnLaserCommand {
+    pub direction: Vec3,
     pub position: Vec3,
 }
 

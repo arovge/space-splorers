@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-
 use crate::{commands::explosion::EXPLOSION_SHEET_TILE_LEN, components::ExplosionTimer};
 
 pub struct ExplosionPlugin;
