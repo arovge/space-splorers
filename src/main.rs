@@ -1,10 +1,13 @@
+use bevy::prelude::*;
+use systems::{
+    explosion::ExplosionPlugin, input::InputPlugin, laser::LaserPlugin, player::PlayerPlugin,
+    ship::ShipPlugin, ui::UiPlugin,
+};
+
 mod commands;
 mod components;
 mod resources;
 mod systems;
-
-use bevy::prelude::*;
-use systems::{explosion::ExplosionPlugin, laser::LaserPlugin, ship::ShipPlugin, text::TextPlugin};
 
 fn setup(mut commands: Commands) {
     commands.spawn(Camera2dBundle::default());
@@ -15,6 +18,13 @@ fn main() {
         .insert_resource(ClearColor(Color::BLACK))
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
-        .add_plugins((ExplosionPlugin, LaserPlugin, ShipPlugin, TextPlugin))
+        .add_plugins((
+            ExplosionPlugin,
+            InputPlugin,
+            LaserPlugin,
+            PlayerPlugin,
+            ShipPlugin,
+            UiPlugin,
+        ))
         .run();
 }

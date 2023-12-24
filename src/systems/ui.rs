@@ -3,9 +3,9 @@ use crate::components::{
 };
 use bevy::prelude::*;
 
-pub struct TextPlugin;
+pub struct UiPlugin;
 
-impl Plugin for TextPlugin {
+impl Plugin for UiPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, setup).add_systems(
             Update,
@@ -54,7 +54,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         TextBundle::from_section("Ready", text_style)
             .with_style(Style {
                 position_type: PositionType::Absolute,
-                bottom: Val::Px(65.),
+                bottom: Val::Px(75.),
                 right: Val::Px(15.),
                 ..default()
             })
@@ -67,18 +67,20 @@ fn update_coordinates_text(
     mut text_query: Query<&mut Text, With<CoordinatesText>>,
     ship_query: Query<&Transform, With<Player>>,
 ) {
-    let ship_translation = ship_query.single().translation;
-    let mut text = text_query.single_mut();
-    text.sections[0].value = format!("{0:.2}, {1:.2}", ship_translation.x, ship_translation.y);
+    if let Ok(ship) = ship_query.get_single() {
+        let mut text = text_query.single_mut();
+        text.sections[0].value = format!("{0:.2}, {1:.2}", ship.translation.x, ship.translation.y);
+    }
 }
 
 fn update_health_text(
     mut text_query: Query<&mut Text, With<HealthText>>,
     ship_query: Query<&Health, With<Player>>,
 ) {
-    let ship_health = ship_query.single().0;
-    let mut text = text_query.single_mut();
-    text.sections[0].value = format!("{ship_health}/100");
+    if let Ok(ship_health) = ship_query.get_single() {
+        let mut text = text_query.single_mut();
+        text.sections[0].value = format!("{}/100", ship_health.0);
+    }
 }
 
 fn update_cooldown_text(
@@ -87,11 +89,12 @@ fn update_cooldown_text(
     cooldowns: Query<&LaserCooldown, With<Player>>,
 ) {
     let mut text = text_query.single_mut();
-    let ship = ship_query.single();
+    if let Ok(ship) = ship_query.get_single() {
+        let ship_cooldown = cooldowns.get_component::<LaserCooldown>(ship);
 
-    text.sections[0].value = if let Ok(cooldown) = cooldowns.get_component::<LaserCooldown>(ship) {
-        format!("{:.2}%", cooldown.0.percent() * 100.)
-    } else {
-        "Ready".to_string()
-    };
+        text.sections[0].value = match ship_cooldown {
+            Ok(cooldown) => format!("{:.2}%", cooldown.0.percent() * 100.),
+            _ => String::from("Ready"),
+        };
+    }
 }

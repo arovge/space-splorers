@@ -1,13 +1,23 @@
-use crate::{components::Laser, systems::laser::LASER_SIZE};
+use crate::{
+    components::{Laser, LaserCooldown},
+    systems::laser::{LASER_COOLDOWN_DURATION, LASER_SIZE},
+};
 use bevy::{ecs::system::Command, prelude::*, sprite::MaterialMesh2dBundle};
 
 pub struct SpawnLaserCommand {
     pub direction: Vec3,
     pub position: Vec3,
+    pub spawned_by: Entity,
 }
 
 impl Command for SpawnLaserCommand {
     fn apply(self, world: &mut World) {
+        let entity_has_cooldown = world.get::<LaserCooldown>(self.spawned_by).is_some();
+
+        if entity_has_cooldown {
+            return;
+        }
+
         let mesh_handle = world.resource_scope(|_world, mut meshes: Mut<Assets<Mesh>>| {
             let shape = shape::Cube { size: LASER_SIZE };
             meshes.add(Mesh::from(shape))
@@ -30,5 +40,11 @@ impl Command for SpawnLaserCommand {
                 direction: Vec3::ZERO,
             },
         ));
+        world
+            .entity_mut(self.spawned_by)
+            .insert(LaserCooldown(Timer::from_seconds(
+                LASER_COOLDOWN_DURATION,
+                TimerMode::Once,
+            )));
     }
 }
