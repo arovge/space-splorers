@@ -4,7 +4,7 @@ use crate::{
         laser::SpawnLaserCommand,
         ship::{ShipKind, SpawnShipCommand},
     },
-    components::{Player, Ship},
+    components::Player,
 };
 use bevy::{prelude::*, window::PrimaryWindow};
 use std::ops::Add;
@@ -53,10 +53,12 @@ fn rotate_ship_to_cursor(
 fn handle_keyboard_input(
     time: Res<Time>,
     keys: Res<Input<KeyCode>>,
-    mut query: Query<(&mut Transform, Entity, &mut Ship), With<Player>>,
+    mut query: Query<(&mut Transform, Entity), With<Player>>,
     mut commands: Commands,
 ) {
-    let (mut ship_transform, ship_entity, _ship) = query.single_mut();
+    let Ok((mut ship_transform, ship_entity)) = query.get_single_mut() else {
+        return;
+    };
 
     if keys.pressed(KeyCode::W) {
         ship_transform.translation.y += SHIP_SPEED * time.delta_seconds();
