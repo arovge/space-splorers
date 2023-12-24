@@ -1,4 +1,7 @@
-use crate::{components::{Ship, Health}, systems::ship::SHIP_SIZE};
+use crate::{
+    components::{Health, Ship},
+    systems::ship::SHIP_SIZE,
+};
 use bevy::{ecs::system::Command, prelude::*, sprite::MaterialMesh2dBundle};
 
 pub struct SpawnEnemyCommand {
@@ -26,7 +29,7 @@ impl Command for SpawnEnemyCommand {
                 ..default()
             },
             Ship,
-            Health(100)
+            Health(100),
         ));
     }
 }

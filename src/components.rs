@@ -37,3 +37,6 @@ pub struct HealthText;
 
 #[derive(Component)]
 pub struct LaserCooldownText;
+
+#[derive(Component)]
+pub struct ExplosionTimer(pub Timer);

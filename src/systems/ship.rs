@@ -1,7 +1,9 @@
 use super::laser::LASER_SIZE;
 use crate::{
-    commands::{enemy::SpawnEnemyCommand, laser::SpawnLaserCommand},
-    components::{Health, Laser, LaserCooldown, Ship, Player},
+    commands::{
+        enemy::SpawnEnemyCommand, explosion::SpawnExplosionCommand, laser::SpawnLaserCommand,
+    },
+    components::{Health, Laser, LaserCooldown, Player, Ship},
 };
 use bevy::{prelude::*, sprite::MaterialMesh2dBundle};
 use std::ops::Add;
@@ -41,7 +43,7 @@ fn setup(
         },
         Ship,
         Health::default(),
-        Player
+        Player,
     ));
 }
 
@@ -85,7 +87,7 @@ fn handle_keyboard_input(
             });
             commands
                 .entity(ship_entity)
-                .insert(LaserCooldown(Timer::from_seconds(1., TimerMode::Once)));
+                .insert(LaserCooldown(Timer::from_seconds(0.25, TimerMode::Once)));
         }
     }
 
@@ -118,10 +120,14 @@ fn check_for_laser_hit(
     }
 }
 
-fn check_health_to_despawn(ship_query: Query<(Entity, &Health), With<Ship>>, mut commands: Commands) {
-    for (ship_entity, health) in &ship_query {
+fn check_health_to_despawn(
+    ship_query: Query<(&Transform, Entity, &Health), With<Ship>>,
+    mut commands: Commands,
+) {
+    for (ship_transform, ship_entity, health) in &ship_query {
         if health.0 <= 0 {
             commands.entity(ship_entity).despawn();
+            commands.add(SpawnExplosionCommand(ship_transform.translation));
         }
     }
 }

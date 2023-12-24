@@ -2,7 +2,7 @@ use crate::components::{Laser, LaserCooldown};
 use bevy::prelude::*;
 
 pub const LASER_SIZE: f32 = 5.;
-const LASER_SPEED: f32 = 250.;
+const LASER_SPEED: f32 = 750.;
 
 pub struct LaserPlugin;
 
