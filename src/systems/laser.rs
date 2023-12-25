@@ -14,16 +14,17 @@ impl Plugin for LaserPlugin {
 }
 
 fn move_lasers(time: Res<Time>, mut query: Query<(&mut Transform, &Laser), With<Laser>>) {
-    for (mut laser_transform, laser) in query.iter_mut() {
+    for (_laser_transform, _laser) in query.iter_mut() {
         let delta = time.delta_seconds();
-        let distance = LASER_SPEED * delta;
+        let _distance = LASER_SPEED * delta;
+
+        // laser_transform.forward();
 
         // TODO: Figure out math
-        let _theta = laser.direction.y.atan2(laser.direction.x);
-        let dx = laser.direction.x * distance;
-        let dy = laser.direction.y * distance;
-        laser_transform.translation.x += dx;
-        laser_transform.translation.y += dy;
+        // let _theta = laser.direction.y.atan2(laser.direction.x);
+        // let dx = laser.direction.x * distance;
+        // let dy = laser.direction.y * distance;
+        // laser_transform.forward();
 
         // TODO: How despawn when off screen?
         // Maybe have it lose energy as it travels? Or a set distance/time to live?

@@ -10,9 +10,7 @@ pub struct Player;
 pub struct Enemy;
 
 #[derive(Component)]
-pub struct Laser {
-    pub direction: Vec3,
-}
+pub struct Laser;
 
 #[derive(Component)]
 pub struct LaserCooldown(pub Timer);

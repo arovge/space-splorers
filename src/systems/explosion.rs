@@ -44,8 +44,11 @@ fn update_explosions(
 ) {
     for (entity, mut timer, mut sprite) in &mut query {
         timer.0.tick(time.delta());
+
         if timer.0.finished() {
-            sprite.index += 1; // move to next sprite tile
+            // move to next sprite tile
+            sprite.index += 1;
+
             if sprite.index >= EXPLOSION_SHEET_TILE_LENGTH {
                 commands.entity(entity).despawn();
             }

@@ -65,9 +65,9 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
 
 fn update_coordinates_text(
     mut text_query: Query<&mut Text, With<CoordinatesText>>,
-    ship_query: Query<&Transform, With<Player>>,
+    player_query: Query<&Transform, With<Player>>,
 ) {
-    if let Ok(ship) = ship_query.get_single() {
+    if let Ok(ship) = player_query.get_single() {
         let mut text = text_query.single_mut();
         text.sections[0].value = format!("{0:.2}, {1:.2}", ship.translation.x, ship.translation.y);
     }
@@ -75,9 +75,9 @@ fn update_coordinates_text(
 
 fn update_health_text(
     mut text_query: Query<&mut Text, With<HealthText>>,
-    ship_query: Query<&Health, With<Player>>,
+    player_query: Query<&Health, With<Player>>,
 ) {
-    if let Ok(ship_health) = ship_query.get_single() {
+    if let Ok(ship_health) = player_query.get_single() {
         let mut text = text_query.single_mut();
         text.sections[0].value = format!("{}/100", ship_health.0);
     }
@@ -85,11 +85,11 @@ fn update_health_text(
 
 fn update_cooldown_text(
     mut text_query: Query<&mut Text, With<LaserCooldownText>>,
-    ship_query: Query<Entity, With<Player>>,
+    player_query: Query<Entity, With<Player>>,
     cooldowns: Query<&LaserCooldown, With<Player>>,
 ) {
     let mut text = text_query.single_mut();
-    if let Ok(ship) = ship_query.get_single() {
+    if let Ok(ship) = player_query.get_single() {
         let ship_cooldown = cooldowns.get_component::<LaserCooldown>(ship);
 
         text.sections[0].value = match ship_cooldown {

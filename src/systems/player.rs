@@ -1,13 +1,9 @@
-use super::ship::SHIP_SPEED;
+use super::{cursor_position_to_world_position, ship::SHIP_SPEED};
 use crate::{
-    commands::{
-        laser::SpawnLaserCommand,
-        ship::{ShipKind, SpawnShipCommand},
-    },
+    commands::ship::{ShipKind, SpawnShipCommand},
     components::Player,
 };
 use bevy::{prelude::*, window::PrimaryWindow};
-use std::ops::Add;
 
 pub struct PlayerPlugin;
 
@@ -26,67 +22,65 @@ fn setup(mut commands: Commands) {
 }
 
 fn rotate_ship_to_cursor(
-    windows: Query<&Window, With<PrimaryWindow>>,
+    window_query: Query<&Window, With<PrimaryWindow>>,
     camera_query: Query<(&Camera, &GlobalTransform), With<Camera2d>>,
-    mut query: Query<&mut Transform, With<Player>>,
+    mut player_query: Query<&mut Transform, With<Player>>,
 ) {
-    let (camera, camera_transform) = camera_query.single();
-    let cursor_position = windows.get_single().ok().and_then(|a| a.cursor_position());
-    let Some(target) = cursor_position else {
+    let Some(target_position) = cursor_position_to_world_position(&window_query, &camera_query)
+    else {
         return;
     };
+    let Ok(mut player_transform) = player_query.get_single_mut() else {
+        return;
+    };
+    let ship_position = player_transform.translation.xy();
 
-    let world_position = camera
-        .viewport_to_world_2d(camera_transform, target)
-        .unwrap();
-    let mut ship_transform = query.single_mut();
-    let pos = ship_transform.translation.truncate();
-
-    let direction = world_position - pos;
+    let direction = target_position - ship_position;
 
     // Calculate angle between direction and x-axis
     let angle = direction.y.atan2(direction.x);
-
-    ship_transform.rotation = Quat::from_rotation_z(angle);
+    player_transform.rotation = Quat::from_rotation_z(angle);
 }
 
 fn handle_keyboard_input(
     time: Res<Time>,
     keys: Res<Input<KeyCode>>,
-    mut query: Query<(&mut Transform, Entity), With<Player>>,
-    mut commands: Commands,
+    mut player_query: Query<(&mut Transform, Entity), With<Player>>,
+    mut _commands: Commands,
 ) {
-    let Ok((mut ship_transform, ship_entity)) = query.get_single_mut() else {
+    let Ok((mut player_transform, _entity)) = player_query.get_single_mut() else {
         return;
     };
 
     if keys.pressed(KeyCode::W) {
-        ship_transform.translation.y += SHIP_SPEED * time.delta_seconds();
+        player_transform.translation.y += SHIP_SPEED * time.delta_seconds();
     }
 
     if keys.pressed(KeyCode::A) {
-        ship_transform.translation.x -= SHIP_SPEED * time.delta_seconds();
+        player_transform.translation.x -= SHIP_SPEED * time.delta_seconds();
     }
 
     if keys.pressed(KeyCode::S) {
-        ship_transform.translation.y -= SHIP_SPEED * time.delta_seconds();
+        player_transform.translation.y -= SHIP_SPEED * time.delta_seconds();
     }
 
     if keys.pressed(KeyCode::D) {
-        ship_transform.translation.x += SHIP_SPEED * time.delta_seconds();
+        player_transform.translation.x += SHIP_SPEED * time.delta_seconds();
     }
 
     if keys.pressed(KeyCode::Space) {
-        let direction = ship_transform.rotation.xyz().normalize();
-        let laser_position = ship_transform
-            .translation
-            .clone()
-            .add(Vec3::new(0., 50., 0.));
+        // let player_position = player_transform.translation.clone();
 
-        commands.add(SpawnLaserCommand {
-            direction,
-            position: laser_position,
-            spawned_by: ship_entity,
-        });
+        // let direction_angle = player_transform.rotation.to_axis_angle().1;
+        // let quat = player_transform
+        //     .rotation
+        //     .clone()
+        //     .mul_quat(Quat::from_rotation_z(direction_angle));
+
+        // commands.add(SpawnLaserCommand {
+        //     position: player_position,
+        //     looking_at: player_position,
+        //     spawned_by: entity,
+        // });
     }
 }

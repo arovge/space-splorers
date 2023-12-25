@@ -5,8 +5,8 @@ use crate::{
 use bevy::{ecs::system::Command, prelude::*, sprite::MaterialMesh2dBundle};
 
 pub struct SpawnLaserCommand {
-    pub direction: Vec3,
     pub position: Vec3,
+    pub looking_at: Vec3,
     pub spawned_by: Entity,
 }
 
@@ -33,12 +33,11 @@ impl Command for SpawnLaserCommand {
             MaterialMesh2dBundle {
                 mesh: mesh_handle.into(),
                 material: material_handle,
-                transform: Transform::from_translation(self.position),
+                transform: Transform::from_translation(self.position)
+                    .looking_at(self.looking_at, Vec3::ZERO),
                 ..default()
             },
-            Laser {
-                direction: Vec3::ZERO,
-            },
+            Laser,
         ));
         world
             .entity_mut(self.spawned_by)

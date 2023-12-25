@@ -55,11 +55,11 @@ fn check_health_to_despawn(
     ship_query: Query<(&Transform, Entity, &Health), With<Ship>>,
     mut commands: Commands,
 ) {
-    for (ship_transform, ship_entity, health) in &ship_query {
+    for (transform, entity, health) in &ship_query {
         if health.0 <= 0 {
-            commands.entity(ship_entity).despawn();
+            commands.entity(entity).despawn();
             commands.add(SpawnExplosionCommand {
-                position: ship_transform.translation,
+                position: transform.translation,
             });
         }
     }
