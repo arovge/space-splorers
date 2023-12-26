@@ -1,6 +1,9 @@
 use super::{cursor_position_to_world_position, ship::SHIP_SPEED};
 use crate::{
-    commands::ship::{ShipKind, SpawnShipCommand},
+    commands::{
+        laser::SpawnLaserCommand,
+        ship::{ShipKind, SpawnShipCommand},
+    },
     components::Player,
 };
 use bevy::{prelude::*, window::PrimaryWindow};
@@ -46,9 +49,9 @@ fn handle_keyboard_input(
     time: Res<Time>,
     keys: Res<Input<KeyCode>>,
     mut player_query: Query<(&mut Transform, Entity), With<Player>>,
-    mut _commands: Commands,
+    mut commands: Commands,
 ) {
-    let Ok((mut player_transform, _entity)) = player_query.get_single_mut() else {
+    let Ok((mut player_transform, entity)) = player_query.get_single_mut() else {
         return;
     };
 
@@ -69,18 +72,13 @@ fn handle_keyboard_input(
     }
 
     if keys.pressed(KeyCode::Space) {
-        // let player_position = player_transform.translation.clone();
+        let offset_distance = 100.0;
+        let object_b_position = player_transform.translation
+            + player_transform.rotation * Vec3::new(offset_distance, 0.0, 0.0);
 
-        // let direction_angle = player_transform.rotation.to_axis_angle().1;
-        // let quat = player_transform
-        //     .rotation
-        //     .clone()
-        //     .mul_quat(Quat::from_rotation_z(direction_angle));
-
-        // commands.add(SpawnLaserCommand {
-        //     position: player_position,
-        //     looking_at: player_position,
-        //     spawned_by: entity,
-        // });
+        commands.add(SpawnLaserCommand {
+            transform: Transform::from_translation(object_b_position),
+            spawned_by_entity: entity,
+        });
     }
 }

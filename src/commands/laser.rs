@@ -5,14 +5,13 @@ use crate::{
 use bevy::{ecs::system::Command, prelude::*, sprite::MaterialMesh2dBundle};
 
 pub struct SpawnLaserCommand {
-    pub position: Vec3,
-    pub looking_at: Vec3,
-    pub spawned_by: Entity,
+    pub transform: Transform,
+    pub spawned_by_entity: Entity,
 }
 
 impl Command for SpawnLaserCommand {
     fn apply(self, world: &mut World) {
-        let entity_has_cooldown = world.get::<LaserCooldown>(self.spawned_by).is_some();
+        let entity_has_cooldown = world.get::<LaserCooldown>(self.spawned_by_entity).is_some();
 
         if entity_has_cooldown {
             return;
@@ -33,14 +32,13 @@ impl Command for SpawnLaserCommand {
             MaterialMesh2dBundle {
                 mesh: mesh_handle.into(),
                 material: material_handle,
-                transform: Transform::from_translation(self.position)
-                    .looking_at(self.looking_at, Vec3::ZERO),
+                transform: self.transform,
                 ..default()
             },
             Laser,
         ));
         world
-            .entity_mut(self.spawned_by)
+            .entity_mut(self.spawned_by_entity)
             .insert(LaserCooldown(Timer::from_seconds(
                 LASER_COOLDOWN_DURATION,
                 TimerMode::Once,
