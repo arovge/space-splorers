@@ -16,11 +16,16 @@ pub struct Laser;
 pub struct LaserCooldown(pub Timer);
 
 #[derive(Component)]
+pub struct ExplosionTimer(pub Timer);
+
+#[derive(Component)]
 pub struct Health(pub usize);
 
 impl Health {
     pub fn take_damange(&mut self) {
-        self.0 -= 25;
+        if self.0 > 0 {
+            self.0 -= 25;
+        }
     }
 }
 
@@ -32,6 +37,3 @@ pub struct HealthText;
 
 #[derive(Component)]
 pub struct LaserCooldownText;
-
-#[derive(Component)]
-pub struct ExplosionTimer(pub Timer);

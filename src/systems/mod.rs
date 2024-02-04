@@ -9,7 +9,7 @@ pub mod player;
 pub mod ship;
 pub mod ui;
 
-pub fn cursor_position_to_world_position(
+pub fn get_world_pos(
     window_query: &Query<&Window, With<PrimaryWindow>>,
     camera_query: &Query<(&Camera, &GlobalTransform), With<Camera2d>>,
 ) -> Option<Vec2> {

@@ -3,6 +3,8 @@ use crate::components::{
 };
 use bevy::prelude::*;
 
+const FONT_PATH: &str = "fonts/clacon2.ttf";
+
 pub struct UiPlugin;
 
 impl Plugin for UiPlugin {
@@ -19,7 +21,7 @@ impl Plugin for UiPlugin {
 }
 
 fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
-    let font = asset_server.load("fonts/clacon2.ttf");
+    let font = asset_server.load(FONT_PATH);
     let text_style = TextStyle {
         font,
         font_size: 18.0,
@@ -88,8 +90,8 @@ fn update_cooldown_text(
     player_query: Query<Entity, With<Player>>,
     cooldowns: Query<&LaserCooldown, With<Player>>,
 ) {
-    let mut text = text_query.single_mut();
     if let Ok(ship) = player_query.get_single() {
+        let mut text = text_query.single_mut();
         let ship_cooldown = cooldowns.get_component::<LaserCooldown>(ship);
 
         text.sections[0].value = match ship_cooldown {

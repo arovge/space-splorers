@@ -1,4 +1,4 @@
-use super::{cursor_position_to_world_position, ship::SHIP_SPEED};
+use super::{get_world_pos, ship::SHIP_SPEED};
 use crate::{
     commands::{
         laser::SpawnLaserCommand,
@@ -29,8 +29,7 @@ fn rotate_ship_to_cursor(
     camera_query: Query<(&Camera, &GlobalTransform), With<Camera2d>>,
     mut player_query: Query<&mut Transform, With<Player>>,
 ) {
-    let Some(target_position) = cursor_position_to_world_position(&window_query, &camera_query)
-    else {
+    let Some(target_position) = get_world_pos(&window_query, &camera_query) else {
         return;
     };
     let Ok(mut player_transform) = player_query.get_single_mut() else {
@@ -55,20 +54,32 @@ fn handle_keyboard_input(
         return;
     };
 
+    let is_boosted = keys.pressed(KeyCode::ShiftLeft);
+    let speed = if is_boosted {
+        SHIP_SPEED * 2.
+    } else {
+        SHIP_SPEED
+    };
+
     if keys.pressed(KeyCode::W) {
-        player_transform.translation.y += SHIP_SPEED * time.delta_seconds();
+        // let delta = time.delta_seconds();
+        // println!("{}",player_transform.translation.normalize_or_zero());
+        // let forward = player_transform.rotation * player_transform.translation.normalize_or_zero();
+        // player_transform.translation += forward * SHIP_SPEED * delta;
+
+        player_transform.translation.y += speed * time.delta_seconds();
     }
 
     if keys.pressed(KeyCode::A) {
-        player_transform.translation.x -= SHIP_SPEED * time.delta_seconds();
+        player_transform.translation.x -= speed * time.delta_seconds();
     }
 
     if keys.pressed(KeyCode::S) {
-        player_transform.translation.y -= SHIP_SPEED * time.delta_seconds();
+        player_transform.translation.y -= speed * time.delta_seconds();
     }
 
     if keys.pressed(KeyCode::D) {
-        player_transform.translation.x += SHIP_SPEED * time.delta_seconds();
+        player_transform.translation.x += speed * time.delta_seconds();
     }
 
     if keys.pressed(KeyCode::Space) {
@@ -76,8 +87,15 @@ fn handle_keyboard_input(
         let object_b_position = player_transform.translation
             + player_transform.rotation * Vec3::new(offset_distance, 0.0, 0.0);
 
+        let t =
+            Transform::from_translation(object_b_position).looking_at(object_b_position, Vec3::Z);
+
+        // let a = Transform::from_translation(
+        //     player_transform.translation + -player_transform.forward() * 100.,
+        // );
+
         commands.add(SpawnLaserCommand {
-            transform: Transform::from_translation(object_b_position),
+            transform: t,
             spawned_by_entity: entity,
         });
     }
