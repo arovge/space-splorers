@@ -15,7 +15,11 @@ impl Command for SpawnExplosionCommand {
 
         world.spawn((
             SpriteSheetBundle {
-                texture_atlas: sprite_sheets.explosion_tiles.clone(),
+                atlas: TextureAtlas {
+                    layout: sprite_sheets.explosion.layout_handle.clone(),
+                    index: 0,
+                },
+                texture: sprite_sheets.explosion.texture_handle.clone(),
                 transform: Transform {
                     translation: self.position,
                     ..Default::default()

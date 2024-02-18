@@ -36,7 +36,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 right: Val::Px(15.),
                 ..default()
             })
-            .with_text_alignment(TextAlignment::Right),
+            .with_text_justify(JustifyText::Right),
         CoordinatesText,
     ));
 
@@ -48,7 +48,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 right: Val::Px(15.),
                 ..default()
             })
-            .with_text_alignment(TextAlignment::Right),
+            .with_text_justify(JustifyText::Right),
         HealthText,
     ));
 
@@ -60,7 +60,7 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 right: Val::Px(15.),
                 ..default()
             })
-            .with_text_alignment(TextAlignment::Right),
+            .with_text_justify(JustifyText::Right),
         LaserCooldownText,
     ));
 }
@@ -92,10 +92,10 @@ fn update_cooldown_text(
 ) {
     if let Ok(ship) = player_query.get_single() {
         let mut text = text_query.single_mut();
-        let ship_cooldown = cooldowns.get_component::<LaserCooldown>(ship);
+        let ship_cooldown = cooldowns.get(ship);
 
         text.sections[0].value = match ship_cooldown {
-            Ok(cooldown) => format!("{:.2}%", cooldown.0.percent() * 100.),
+            Ok(cooldown) => format!("{:.2}%", cooldown.0.fraction() * 100.),
             _ => String::from("Ready"),
         };
     }

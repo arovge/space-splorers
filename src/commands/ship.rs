@@ -2,7 +2,9 @@ use crate::{
     components::{Enemy, Health, Player, Ship},
     systems::ship::{SHIP_INITIAL_HEALTH, SHIP_SIZE},
 };
-use bevy::{ecs::system::Command, prelude::*, sprite::MaterialMesh2dBundle};
+use bevy::{
+    ecs::system::Command, math::primitives::Rectangle, prelude::*, sprite::MaterialMesh2dBundle,
+};
 
 pub enum ShipKind {
     Player,
@@ -17,8 +19,10 @@ pub struct SpawnShipCommand {
 impl Command for SpawnShipCommand {
     fn apply(self, world: &mut World) {
         let mesh_handle = world.resource_scope(|_world, mut meshes: Mut<Assets<Mesh>>| {
-            let shape = shape::Cube { size: SHIP_SIZE };
-            meshes.add(Mesh::from(shape))
+            let shape = Rectangle {
+                half_size: Vec2::new(SHIP_SIZE / 2., SHIP_SIZE / 2.),
+            };
+            meshes.add(shape.mesh())
         });
 
         let material_handle =

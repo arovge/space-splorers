@@ -46,7 +46,7 @@ fn rotate_ship_to_cursor(
 
 fn handle_keyboard_input(
     time: Res<Time>,
-    keys: Res<Input<KeyCode>>,
+    keys: Res<ButtonInput<KeyCode>>,
     mut player_query: Query<(&mut Transform, Entity), With<Player>>,
     mut commands: Commands,
 ) {
@@ -61,7 +61,7 @@ fn handle_keyboard_input(
         SHIP_SPEED
     };
 
-    if keys.pressed(KeyCode::W) {
+    if keys.pressed(KeyCode::KeyW) {
         // let delta = time.delta_seconds();
         // println!("{}",player_transform.translation.normalize_or_zero());
         // let forward = player_transform.rotation * player_transform.translation.normalize_or_zero();
@@ -70,15 +70,15 @@ fn handle_keyboard_input(
         player_transform.translation.y += speed * time.delta_seconds();
     }
 
-    if keys.pressed(KeyCode::A) {
+    if keys.pressed(KeyCode::KeyA) {
         player_transform.translation.x -= speed * time.delta_seconds();
     }
 
-    if keys.pressed(KeyCode::S) {
+    if keys.pressed(KeyCode::KeyS) {
         player_transform.translation.y -= speed * time.delta_seconds();
     }
 
-    if keys.pressed(KeyCode::D) {
+    if keys.pressed(KeyCode::KeyD) {
         player_transform.translation.x += speed * time.delta_seconds();
     }
 

@@ -1,6 +1,7 @@
 use crate::{
-    commands::explosion::EXPLOSION_SHEET_TILE_LENGTH, components::ExplosionTimer,
-    resources::SpriteSheets,
+    commands::explosion::EXPLOSION_SHEET_TILE_LENGTH,
+    components::ExplosionTimer,
+    resources::{SpriteSheet, SpriteSheets},
 };
 use bevy::prelude::*;
 
@@ -21,26 +22,30 @@ impl Plugin for ExplosionPlugin {
 fn setup(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut atlases: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     let texture_handle = asset_server.load(EXPLOSION_SHEET);
-    let texture_atlas = TextureAtlas::from_grid(
-        texture_handle,
+    let layout = TextureAtlasLayout::from_grid(
         EXPLOSION_TILE_SIZE,
         EXPLOSION_TILE_SHEET_COLS,
         EXPLOSION_TILE_SHEET_ROWS,
         None,
         None,
     );
-    let explosion_tiles = texture_atlases.add(texture_atlas);
-    let sprite_sheets = SpriteSheets { explosion_tiles };
+    let layout_handle = atlases.add(layout);
+    let sprite_sheets = SpriteSheets {
+        explosion: SpriteSheet {
+            layout_handle,
+            texture_handle,
+        },
+    };
     commands.insert_resource(sprite_sheets);
 }
 
 fn update_explosions(
     mut commands: Commands,
     time: Res<Time>,
-    mut query: Query<(Entity, &mut ExplosionTimer, &mut TextureAtlasSprite), With<ExplosionTimer>>,
+    mut query: Query<(Entity, &mut ExplosionTimer, &mut TextureAtlas), With<ExplosionTimer>>,
 ) {
     for (entity, mut timer, mut sprite) in &mut query {
         timer.0.tick(time.delta());
