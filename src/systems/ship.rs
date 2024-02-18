@@ -65,8 +65,8 @@ fn check_health_to_despawn(
     }
 }
 
-fn check_for_enemy_spawn(keys: Res<Input<KeyCode>>, mut commands: Commands) {
-    if keys.just_pressed(KeyCode::F) {
+fn check_for_enemy_spawn(keys: Res<ButtonInput<KeyCode>>, mut commands: Commands) {
+    if keys.just_pressed(KeyCode::KeyF) {
         commands.add(SpawnShipCommand {
             kind: ShipKind::Enemy,
             position: Vec3::ZERO,

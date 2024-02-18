@@ -2,7 +2,9 @@ use crate::{
     components::{Laser, LaserCooldown},
     systems::laser::{LASER_COOLDOWN_DURATION, LASER_SIZE},
 };
-use bevy::{ecs::system::Command, prelude::*, sprite::MaterialMesh2dBundle};
+use bevy::{
+    ecs::system::Command, math::primitives::Rectangle, prelude::*, sprite::MaterialMesh2dBundle,
+};
 
 pub struct SpawnLaserCommand {
     pub transform: Transform,
@@ -18,7 +20,9 @@ impl Command for SpawnLaserCommand {
         }
 
         let mesh_handle = world.resource_scope(|_world, mut meshes: Mut<Assets<Mesh>>| {
-            let shape = shape::Cube { size: LASER_SIZE };
+            let shape = Rectangle {
+                half_size: Vec2::new(LASER_SIZE / 2., LASER_SIZE / 2.),
+            };
             meshes.add(Mesh::from(shape))
         });
 
